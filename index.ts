@@ -19,8 +19,9 @@ const API_KEY = process.env.API_KEY;
 const MODEL_NAME = process.env.MODEL_NAME || "gemini-2.5-flash-image";
 
 // Sora2 Video API configuration
-const SORA2_API_ENDPOINT = process.env.SORA2_API_ENDPOINT || "https://gpt-best.apifox.cn";
+const SORA2_API_ENDPOINT = process.env.SORA2_API_ENDPOINT || process.env.API_ENDPOINT || "https://gpt-best.apifox.cn";
 const SORA2_API_KEY = process.env.SORA2_API_KEY || API_KEY;
+const SORA2_MODEL_NAME = process.env.SORA2_MODEL_NAME || "sora-2";
 
 // System prompt for image generation
 const SYSTEM_PROMPT = "You are an image generation AI. Generate images based on user requirements. Do not respond with any other content. Only generate images as requested.";
