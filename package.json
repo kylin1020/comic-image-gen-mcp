@@ -1,0 +1,37 @@
+{
+  "name": "comic-image-gen-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for comic-style text-to-image and image-to-image generation via OpenAI-compatible API",
+  "main": "build/index.js",
+  "type": "module",
+  "bin": {
+    "comic-image-gen-mcp": "build/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "npm run build",
+    "inspector": "npx @modelcontextprotocol/inspector node build/index.js",
+    "get-path": "node get-path.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "text-to-image",
+    "comic",
+    "image-generation",
+    "openai",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "axios": "^1.7.9"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}
+

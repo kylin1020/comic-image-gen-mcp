@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "comic-image-gen": {
+      "command": "node",
+      "args": ["/absolute/path/to/comic-image-gen-mcp/build/index.js"],
+      "env": {
+        "API_KEY": "your_api_key_here",
+        "API_ENDPOINT": "https://your-api-endpoint.com/v1/chat/completions",
+        "MODEL_NAME": "your_model_name"
+      }
+    }
+  }
+}
+
