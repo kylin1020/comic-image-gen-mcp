@@ -60,14 +60,13 @@
 2. **API 端点**: 确保您有可用的 `/v1/chat/completions` 端点
 3. **Node.js**: 确保已安装 Node.js（版本 16 或更高）
 
+#### 快速配置（推荐）
+
+在 Claude Desktop 或 Cursor 中，可以直接使用 npx 进行快速配置，无需手动构建。
+
 #### 手动安装
 
-1. **克隆或下载项目**
-```bash
-cd /Users/jyxc-dz-0100286/comic-image-gen-mcp
-```
-
-2. **安装依赖**
+1. **安装依赖**
 ```bash
 npm install
 ```
@@ -79,7 +78,7 @@ npm run build
 
 4. **在配置中使用绝对路径**
 
-##### Claude Desktop 应用
+##### Claude Desktop 应用或 Cursor 中使用 npx 快速配置
 
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
@@ -88,8 +87,11 @@ npm run build
 {
   "mcpServers": {
     "comic-image-gen": {
-      "command": "node",
-      "args": ["/Users/jyxc-dz-0100286/comic-image-gen-mcp/build/index.js"],
+      "command": "npx",
+      "args": [
+        "-y",
+        "https://github.com/kylin1020/comic-image-gen-mcp.git"
+      ],
       "env": {
         "API_KEY": "your_api_key_here",
         "API_ENDPOINT": "https://your-api-endpoint.com/v1/chat/completions",
@@ -100,33 +102,16 @@ npm run build
 }
 ```
 
+**或使用本地构建方式（传统方式）**
+
+手动构建后，更新配置使用本地路径。
+
 ##### Kilo Code MCP 设置
 
 添加到 MCP 设置文件：
 `C:\Users\[username]\AppData\Roaming\Code\User\globalStorage\kilocode.kilo-code\settings\mcp_settings.json`
 
-```json
-{
-  "mcpServers": {
-    "comic-image-gen": {
-      "command": "node",
-      "args": ["/Users/jyxc-dz-0100286/comic-image-gen-mcp/build/index.js"],
-      "env": {
-        "API_KEY": "your_api_key_here",
-        "API_ENDPOINT": "https://your-api-endpoint.com/v1/chat/completions",
-        "MODEL_NAME": "your_model_name"
-      },
-      "disabled": false,
-      "alwaysAllow": []
-    }
-  }
-}
-```
-
-**获取绝对路径的辅助脚本：**
-```bash
-npm run get-path
-```
+可使用相同的 npx 方式或本地构建方式。
 
 ### 环境变量
 
@@ -333,7 +318,7 @@ npm run build
 
 4. **Use absolute path in configuration**
 
-##### For Claude Desktop App
+##### For Claude Desktop App or Quick Setup with npx in Cursor
 
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
@@ -342,8 +327,11 @@ npm run build
 {
   "mcpServers": {
     "comic-image-gen": {
-      "command": "node",
-      "args": ["/Users/jyxc-dz-0100286/comic-image-gen-mcp/build/index.js"],
+      "command": "npx",
+      "args": [
+        "-y",
+        "https://github.com/kylin1020/comic-image-gen-mcp.git"
+      ],
       "env": {
         "API_KEY": "your_api_key_here",
         "API_ENDPOINT": "https://your-api-endpoint.com/v1/chat/completions",
@@ -354,10 +342,9 @@ npm run build
 }
 ```
 
-**Helper script to get absolute path:**
-```bash
-npm run get-path
-```
+**Or use local build method (traditional way)**
+
+Build locally and then update configuration to use local path.
 
 ### Environment Variables
 
