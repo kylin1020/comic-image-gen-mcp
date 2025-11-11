@@ -720,9 +720,7 @@ async function generateSora2Video(args: GenerateSora2VideoArgs): Promise<string>
   const {
     prompt,
     images,
-    model = "sora-2",
     aspect_ratio = "16:9",
-    hd = false,
     duration = "10",
     watermark = false,
     private: isPrivate = true,
@@ -738,7 +736,6 @@ async function generateSora2Video(args: GenerateSora2VideoArgs): Promise<string>
     prompt,
     image_count: images?.length || 0,
     aspect_ratio,
-    hd,
     duration
   }));
 
@@ -801,9 +798,8 @@ async function generateSora2Video(args: GenerateSora2VideoArgs): Promise<string>
     // Step 1: Create video generation task
     const requestBody: any = {
       prompt,
-      model,
+      model: SORA2_MODEL_NAME,
       aspect_ratio,
-      hd,
       duration,
       watermark,
       private: isPrivate,
@@ -842,7 +838,6 @@ async function generateSora2Video(args: GenerateSora2VideoArgs): Promise<string>
     }
     result += `📐 Aspect Ratio: ${aspect_ratio}\n`;
     result += `⏱️  Duration: ${duration}s\n`;
-    result += `🎨 HD: ${hd ? 'Yes' : 'No'}\n`;
     result += `💧 Watermark: ${watermark ? 'Yes' : 'No'}\n\n`;
     result += `⏳ Waiting for video generation to complete...\n`;
     result += `   (This may take 1-15 minutes depending on settings)\n\n`;
@@ -850,7 +845,6 @@ async function generateSora2Video(args: GenerateSora2VideoArgs): Promise<string>
     // Calculate max wait time based on settings
     let maxWaitMinutes = 5; // Base time
     if (duration === "15") maxWaitMinutes += 2;
-    if (hd) maxWaitMinutes += 10;
 
     const taskResult = await pollSora2Task(taskId, maxWaitMinutes);
 
@@ -1184,20 +1178,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 type: "string",
               },
             },
-            model: {
-              type: "string",
-              description: "Model to use for generation (default: 'sora-2')",
-              default: "sora-2",
-            },
             aspect_ratio: {
               type: "string",
               description: "Video aspect ratio: '16:9', '9:16', '1:1' (default: '16:9')",
               default: "16:9",
-            },
-            hd: {
-              type: "boolean",
-              description: "Generate in HD quality (adds ~8 minutes to generation time, default: false)",
-              default: false,
             },
             duration: {
               type: "string",
@@ -1225,24 +1209,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["prompt"],
         },
-      },
-      {
-        name: "query_sora2_task",
-        description:
-          "Query the status of a Sora2 video generation task. " +
-          "Use this to check the progress of a video generation task if you need to manually track it. " +
-          "Note: The generate_sora2_video tool already waits for completion automatically, so this is only needed for manual checking.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            task_id: {
-              type: "string",
-              description: "The task ID returned by generate_sora2_video",
-            },
-          },
-          required: ["task_id"],
-        },
-      },
+      }
     ],
   };
 });
