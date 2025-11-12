@@ -19,9 +19,9 @@ const API_KEY = process.env.API_KEY;
 const MODEL_NAME = process.env.MODEL_NAME || "gemini-2.5-flash-image";
 
 // Sora2 Video API configuration
-const SORA2_API_ENDPOINT = process.env.SORA2_API_ENDPOINT || process.env.API_ENDPOINT || "https://gpt-best.apifox.cn";
-const SORA2_API_KEY = process.env.SORA2_API_KEY || API_KEY;
-const SORA2_MODEL_NAME = process.env.SORA2_MODEL_NAME || "sora-2";
+// const SORA2_API_ENDPOINT = process.env.SORA2_API_ENDPOINT || process.env.API_ENDPOINT || "https://gpt-best.apifox.cn";
+// const SORA2_API_KEY = process.env.SORA2_API_KEY || API_KEY;
+// const SORA2_MODEL_NAME = process.env.SORA2_MODEL_NAME || "sora-2";
 
 // System prompt for image generation
 const SYSTEM_PROMPT = "You are an image generation AI. Generate images based on user requirements. Do not respond with any other content. Only generate images as requested.";
@@ -72,30 +72,30 @@ interface BatchGenerateImageArgs {
   max_concurrent?: number;
 }
 
-interface GenerateSora2VideoArgs {
-  prompt: string;
-  images?: string[];
-  model?: string;
-  aspect_ratio?: string;
-  hd?: boolean;
-  duration?: string;
-  watermark?: boolean;
-  private?: boolean;
-  output_directory?: string;
-  filename?: string;
-}
+// interface GenerateSora2VideoArgs {
+//   prompt: string;
+//   images?: string[];
+//   model?: string;
+//   aspect_ratio?: string;
+//   hd?: boolean;
+//   duration?: string;
+//   watermark?: boolean;
+//   private?: boolean;
+//   output_directory?: string;
+//   filename?: string;
+// }
 
-interface QuerySora2TaskArgs {
-  task_id: string;
-}
+// interface QuerySora2TaskArgs {
+//   task_id: string;
+// }
 
-interface Sora2TaskResponse {
-  task_id: string;
-  status?: string;
-  video_url?: string;
-  error?: string;
-  progress?: number;
-}
+// interface Sora2TaskResponse {
+//   task_id: string;
+//   status?: string;
+//   video_url?: string;
+//   error?: string;
+//   progress?: number;
+// }
 
 interface ChatCompletionResponse {
   id: string;
@@ -141,29 +141,29 @@ async function saveImage(imageData: string, outputPath: string): Promise<void> {
 }
 
 // Download video from URL to disk
-async function downloadVideo(videoUrl: string, outputPath: string): Promise<void> {
-  console.log(JSON.stringify({
-    action: "downloading_video",
-    url: videoUrl,
-    output: outputPath
-  }));
+// async function downloadVideo(videoUrl: string, outputPath: string): Promise<void> {
+//   console.log(JSON.stringify({
+//     action: "downloading_video",
+//     url: videoUrl,
+//     output: outputPath
+//   }));
 
-  const response = await axios.get(videoUrl, {
-    responseType: 'arraybuffer',
-    timeout: 300000, // 5 minutes timeout for video download
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
-  });
+//   const response = await axios.get(videoUrl, {
+//     responseType: 'arraybuffer',
+//     timeout: 300000, // 5 minutes timeout for video download
+//     headers: {
+//       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+//     }
+//   });
   
-  await fs.promises.writeFile(outputPath, response.data);
+//   await fs.promises.writeFile(outputPath, response.data);
   
-  console.log(JSON.stringify({
-    action: "video_downloaded",
-    path: outputPath,
-    size: response.data.length
-  }));
-}
+//   console.log(JSON.stringify({
+//     action: "video_downloaded",
+//     path: outputPath,
+//     size: response.data.length
+//   }));
+// }
 
 // Get default output directory (temp directory with comic-images subfolder)
 function getDefaultOutputDirectory(): string {
@@ -655,356 +655,356 @@ async function batchGenerateImages(args: BatchGenerateImageArgs): Promise<string
 }
 
 // Poll Sora2 task status until completion
-async function pollSora2Task(taskId: string, maxWaitMinutes: number = 30): Promise<Sora2TaskResponse> {
-  const maxAttempts = maxWaitMinutes * 6; // Poll every 10 seconds
-  let attempts = 0;
+// async function pollSora2Task(taskId: string, maxWaitMinutes: number = 30): Promise<Sora2TaskResponse> {
+//   const maxAttempts = maxWaitMinutes * 6; // Poll every 10 seconds
+//   let attempts = 0;
 
-  while (attempts < maxAttempts) {
-    attempts++;
+//   while (attempts < maxAttempts) {
+//     attempts++;
     
-    console.log(JSON.stringify({
-      action: "polling_task_status",
-      task_id: taskId,
-      attempt: attempts,
-      max_attempts: maxAttempts
-    }));
+//     console.log(JSON.stringify({
+//       action: "polling_task_status",
+//       task_id: taskId,
+//       attempt: attempts,
+//       max_attempts: maxAttempts
+//     }));
 
-    try {
-      const response = await axios.get<Sora2TaskResponse>(
-        `${SORA2_API_ENDPOINT}/v2/videos/generations/${taskId}`,
-        {
-          headers: {
-            "Authorization": `Bearer ${SORA2_API_KEY}`,
-          },
-          timeout: 30000,
-        }
-      );
+//     try {
+//       const response = await axios.get<Sora2TaskResponse>(
+//         `${SORA2_API_ENDPOINT}/v2/videos/generations/${taskId}`,
+//         {
+//           headers: {
+//             "Authorization": `Bearer ${SORA2_API_KEY}`,
+//           },
+//           timeout: 30000,
+//         }
+//       );
 
-      const taskData = response.data;
-      const status = taskData.status?.toLowerCase();
+//       const taskData = response.data;
+//       const status = taskData.status?.toLowerCase();
 
-      console.log(JSON.stringify({
-        action: "task_status_update",
-        task_id: taskId,
-        status: taskData.status,
-        progress: taskData.progress
-      }));
+//       console.log(JSON.stringify({
+//         action: "task_status_update",
+//         task_id: taskId,
+//         status: taskData.status,
+//         progress: taskData.progress
+//       }));
 
-      // Check if completed
-      if (status === 'completed' || status === 'success' || status === 'succeeded') {
-        return taskData;
-      }
+//       // Check if completed
+//       if (status === 'completed' || status === 'success' || status === 'succeeded') {
+//         return taskData;
+//       }
 
-      // Check if failed
-      if (status === 'failed' || status === 'error') {
-        throw new Error(`Video generation failed: ${taskData.error || 'Unknown error'}`);
-      }
+//       // Check if failed
+//       if (status === 'failed' || status === 'error') {
+//         throw new Error(`Video generation failed: ${taskData.error || 'Unknown error'}`);
+//       }
 
-      // Still processing, wait before next poll
-      await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
-        // Task not found yet, wait and retry
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        continue;
-      }
-      throw error;
-    }
-  }
+//       // Still processing, wait before next poll
+//       await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds
+//     } catch (error) {
+//       if (axios.isAxiosError(error) && error.response?.status === 404) {
+//         // Task not found yet, wait and retry
+//         await new Promise(resolve => setTimeout(resolve, 10000));
+//         continue;
+//       }
+//       throw error;
+//     }
+//   }
 
-  throw new Error(`Video generation timeout after ${maxWaitMinutes} minutes`);
-}
+//   throw new Error(`Video generation timeout after ${maxWaitMinutes} minutes`);
+// }
 
 // Generate video using Sora2 API
-async function generateSora2Video(args: GenerateSora2VideoArgs): Promise<string> {
-  const {
-    prompt,
-    images,
-    aspect_ratio = "16:9",
-    duration = "10",
-    watermark = false,
-    private: isPrivate = true,
-    output_directory,
-    filename,
-  } = args;
+// async function generateSora2Video(args: GenerateSora2VideoArgs): Promise<string> {
+//   const {
+//     prompt,
+//     images,
+//     aspect_ratio = "16:9",
+//     duration = "10",
+//     watermark = false,
+//     private: isPrivate = true,
+//     output_directory,
+//     filename,
+//   } = args;
 
-  const isTextToVideo = !images || images.length === 0;
+//   const isTextToVideo = !images || images.length === 0;
 
-  console.log(JSON.stringify({
-    action: "generating_sora2_video",
-    type: isTextToVideo ? "text-to-video" : "image-to-video",
-    prompt,
-    image_count: images?.length || 0,
-    aspect_ratio,
-    duration
-  }));
+//   console.log(JSON.stringify({
+//     action: "generating_sora2_video",
+//     type: isTextToVideo ? "text-to-video" : "image-to-video",
+//     prompt,
+//     image_count: images?.length || 0,
+//     aspect_ratio,
+//     duration
+//   }));
 
-  // Process images if provided
-  let processedImages: string[] | undefined;
-  if (images && images.length > 0) {
-    processedImages = [];
-    for (const img of images) {
-      if (img.startsWith('http://') || img.startsWith('https://')) {
-        // It's a URL, use directly
-        processedImages.push(img);
-      } else if (img.startsWith('data:image/')) {
-        // Already base64 encoded
-        processedImages.push(img);
-      } else {
-        // It's a local file path - convert to base64
-        try {
-          const resolvedPath = path.isAbsolute(img) ? img : path.resolve(process.cwd(), img);
+//   // Process images if provided
+//   let processedImages: string[] | undefined;
+//   if (images && images.length > 0) {
+//     processedImages = [];
+//     for (const img of images) {
+//       if (img.startsWith('http://') || img.startsWith('https://')) {
+//         // It's a URL, use directly
+//         processedImages.push(img);
+//       } else if (img.startsWith('data:image/')) {
+//         // Already base64 encoded
+//         processedImages.push(img);
+//       } else {
+//         // It's a local file path - convert to base64
+//         try {
+//           const resolvedPath = path.isAbsolute(img) ? img : path.resolve(process.cwd(), img);
           
-          if (!fs.existsSync(resolvedPath)) {
-            throw new Error(`Image file not found: ${resolvedPath}`);
-          }
+//           if (!fs.existsSync(resolvedPath)) {
+//             throw new Error(`Image file not found: ${resolvedPath}`);
+//           }
 
-          console.log(JSON.stringify({
-            action: "loading_local_image_for_video",
-            path: resolvedPath
-          }));
+//           console.log(JSON.stringify({
+//             action: "loading_local_image_for_video",
+//             path: resolvedPath
+//           }));
 
-          const imageBuffer = await fs.promises.readFile(resolvedPath);
-          const base64Image = imageBuffer.toString('base64');
+//           const imageBuffer = await fs.promises.readFile(resolvedPath);
+//           const base64Image = imageBuffer.toString('base64');
           
-          // Detect MIME type based on file extension
-          const ext = path.extname(resolvedPath).toLowerCase();
-          let mimeType = 'image/jpeg'; // default
-          if (ext === '.png') mimeType = 'image/png';
-          else if (ext === '.jpg' || ext === '.jpeg') mimeType = 'image/jpeg';
-          else if (ext === '.gif') mimeType = 'image/gif';
-          else if (ext === '.webp') mimeType = 'image/webp';
+//           // Detect MIME type based on file extension
+//           const ext = path.extname(resolvedPath).toLowerCase();
+//           let mimeType = 'image/jpeg'; // default
+//           if (ext === '.png') mimeType = 'image/png';
+//           else if (ext === '.jpg' || ext === '.jpeg') mimeType = 'image/jpeg';
+//           else if (ext === '.gif') mimeType = 'image/gif';
+//           else if (ext === '.webp') mimeType = 'image/webp';
           
-          // Format as data URL
-          const dataUrl = `data:${mimeType};base64,${base64Image}`;
-          processedImages.push(dataUrl);
+//           // Format as data URL
+//           const dataUrl = `data:${mimeType};base64,${base64Image}`;
+//           processedImages.push(dataUrl);
           
-          console.log(JSON.stringify({
-            action: "local_image_loaded",
-            path: resolvedPath,
-            mime_type: mimeType
-          }));
-        } catch (error) {
-          throw new McpError(
-            ErrorCode.InvalidParams,
-            `Failed to process local image "${img}": ${error instanceof Error ? error.message : String(error)}`
-          );
-        }
-      }
-    }
-  }
+//           console.log(JSON.stringify({
+//             action: "local_image_loaded",
+//             path: resolvedPath,
+//             mime_type: mimeType
+//           }));
+//         } catch (error) {
+//           throw new McpError(
+//             ErrorCode.InvalidParams,
+//             `Failed to process local image "${img}": ${error instanceof Error ? error.message : String(error)}`
+//           );
+//         }
+//       }
+//     }
+//   }
 
-  try {
-    // Step 1: Create video generation task
-    const requestBody: any = {
-      prompt,
-      model: SORA2_MODEL_NAME,
-      aspect_ratio,
-      duration,
-      watermark,
-      private: isPrivate,
-    };
+//   try {
+//     // Step 1: Create video generation task
+//     const requestBody: any = {
+//       prompt,
+//       model: SORA2_MODEL_NAME,
+//       aspect_ratio,
+//       duration,
+//       watermark,
+//       private: isPrivate,
+//     };
 
-    // Only include images if provided
-    if (processedImages && processedImages.length > 0) {
-      requestBody.images = processedImages;
-    }
+//     // Only include images if provided
+//     if (processedImages && processedImages.length > 0) {
+//       requestBody.images = processedImages;
+//     }
 
-    const response = await axios.post<{ task_id: string }>(
-      `${SORA2_API_ENDPOINT}/v2/videos/generations`,
-      requestBody,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${SORA2_API_KEY}`,
-        },
-        timeout: 120000,
-      }
-    );
+//     const response = await axios.post<{ task_id: string }>(
+//       `${SORA2_API_ENDPOINT}/v2/videos/generations`,
+//       requestBody,
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//           "Authorization": `Bearer ${SORA2_API_KEY}`,
+//         },
+//         timeout: 120000,
+//       }
+//     );
 
-    const taskId = response.data.task_id;
+//     const taskId = response.data.task_id;
 
-    console.log(JSON.stringify({
-      action: "video_task_created",
-      task_id: taskId
-    }));
+//     console.log(JSON.stringify({
+//       action: "video_task_created",
+//       task_id: taskId
+//     }));
 
-    // Step 2: Wait for video generation to complete
-    let result = `✅ Sora2 video generation task created!\n\n`;
-    result += `🎬 Task ID: ${taskId}\n`;
-    result += `📝 Prompt: "${prompt}"\n`;
-    if (processedImages && processedImages.length > 0) {
-      result += `🖼️  Source Images: ${processedImages.length}\n`;
-    }
-    result += `📐 Aspect Ratio: ${aspect_ratio}\n`;
-    result += `⏱️  Duration: ${duration}s\n`;
-    result += `💧 Watermark: ${watermark ? 'Yes' : 'No'}\n\n`;
-    result += `⏳ Waiting for video generation to complete...\n`;
-    result += `   (This may take 1-15 minutes depending on settings)\n\n`;
+//     // Step 2: Wait for video generation to complete
+//     let result = `✅ Sora2 video generation task created!\n\n`;
+//     result += `🎬 Task ID: ${taskId}\n`;
+//     result += `📝 Prompt: "${prompt}"\n`;
+//     if (processedImages && processedImages.length > 0) {
+//       result += `🖼️  Source Images: ${processedImages.length}\n`;
+//     }
+//     result += `📐 Aspect Ratio: ${aspect_ratio}\n`;
+//     result += `⏱️  Duration: ${duration}s\n`;
+//     result += `💧 Watermark: ${watermark ? 'Yes' : 'No'}\n\n`;
+//     result += `⏳ Waiting for video generation to complete...\n`;
+//     result += `   (This may take 1-15 minutes depending on settings)\n\n`;
 
-    // Calculate max wait time based on settings
-    let maxWaitMinutes = 5; // Base time
-    if (duration === "15") maxWaitMinutes += 2;
+//     // Calculate max wait time based on settings
+//     let maxWaitMinutes = 5; // Base time
+//     if (duration === "15") maxWaitMinutes += 2;
 
-    const taskResult = await pollSora2Task(taskId, maxWaitMinutes);
+//     const taskResult = await pollSora2Task(taskId, maxWaitMinutes);
 
-    if (!taskResult.video_url) {
-      throw new Error("Video URL not found in completed task");
-    }
+//     if (!taskResult.video_url) {
+//       throw new Error("Video URL not found in completed task");
+//     }
 
-    result += `✅ Video generation completed successfully!\n`;
-    result += `🎥 Video URL: ${taskResult.video_url}\n\n`;
+//     result += `✅ Video generation completed successfully!\n`;
+//     result += `🎥 Video URL: ${taskResult.video_url}\n\n`;
 
-    // Step 3: Download video to specified path
-    if (output_directory !== undefined) {
-      const targetDir = output_directory || getDefaultOutputDirectory();
+//     // Step 3: Download video to specified path
+//     if (output_directory !== undefined) {
+//       const targetDir = output_directory || getDefaultOutputDirectory();
       
-      // Ensure output directory exists
-      if (!fs.existsSync(targetDir)) {
-        fs.mkdirSync(targetDir, { recursive: true });
-      }
+//       // Ensure output directory exists
+//       if (!fs.existsSync(targetDir)) {
+//         fs.mkdirSync(targetDir, { recursive: true });
+//       }
 
-      const timestamp = Date.now();
-      let finalFilename: string;
-      if (filename) {
-        const ext = path.extname(filename);
-        finalFilename = ext ? filename : `${filename}.mp4`;
-      } else {
-        finalFilename = `sora2_${timestamp}.mp4`;
-      }
+//       const timestamp = Date.now();
+//       let finalFilename: string;
+//       if (filename) {
+//         const ext = path.extname(filename);
+//         finalFilename = ext ? filename : `${filename}.mp4`;
+//       } else {
+//         finalFilename = `sora2_${timestamp}.mp4`;
+//       }
       
-      const filepath = path.join(targetDir, finalFilename);
+//       const filepath = path.join(targetDir, finalFilename);
 
-      result += `📥 Downloading video to: ${filepath}\n`;
+//       result += `📥 Downloading video to: ${filepath}\n`;
 
-      try {
-        await downloadVideo(taskResult.video_url, filepath);
-        result += `✅ Video saved successfully!\n`;
-        result += `📁 File path: ${filepath}\n`;
-      } catch (error) {
-        result += `❌ Failed to download video: ${error instanceof Error ? error.message : String(error)}\n`;
-        result += `💡 You can manually download from: ${taskResult.video_url}\n`;
-      }
-    }
+//       try {
+//         await downloadVideo(taskResult.video_url, filepath);
+//         result += `✅ Video saved successfully!\n`;
+//         result += `📁 File path: ${filepath}\n`;
+//       } catch (error) {
+//         result += `❌ Failed to download video: ${error instanceof Error ? error.message : String(error)}\n`;
+//         result += `💡 You can manually download from: ${taskResult.video_url}\n`;
+//       }
+//     }
 
-    return result;
-  } catch (error) {
-    console.log(JSON.stringify({
-      action: "video_generation_failed",
-      error: error instanceof Error ? error.message : String(error)
-    }));
+//     return result;
+//   } catch (error) {
+//     console.log(JSON.stringify({
+//       action: "video_generation_failed",
+//       error: error instanceof Error ? error.message : String(error)
+//     }));
 
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        const errorMsg = error.response.data?.error || error.response.data?.message || error.message;
-        throw new McpError(
-          ErrorCode.InternalError,
-          `Sora2 API error: ${errorMsg}`
-        );
-      } else if (error.request) {
-        throw new McpError(
-          ErrorCode.InternalError,
-          "No response from Sora2 API. Please check your network connection."
-        );
-      }
-    }
+//     if (axios.isAxiosError(error)) {
+//       if (error.response) {
+//         const errorMsg = error.response.data?.error || error.response.data?.message || error.message;
+//         throw new McpError(
+//           ErrorCode.InternalError,
+//           `Sora2 API error: ${errorMsg}`
+//         );
+//       } else if (error.request) {
+//         throw new McpError(
+//           ErrorCode.InternalError,
+//           "No response from Sora2 API. Please check your network connection."
+//         );
+//       }
+//     }
 
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Failed to generate video: ${error instanceof Error ? error.message : String(error)}`
-    );
-  }
-}
+//     throw new McpError(
+//       ErrorCode.InternalError,
+//       `Failed to generate video: ${error instanceof Error ? error.message : String(error)}`
+//     );
+//   }
+// }
 
 // Query Sora2 video task status
-async function querySora2Task(args: QuerySora2TaskArgs): Promise<string> {
-  const { task_id } = args;
+// async function querySora2Task(args: QuerySora2TaskArgs): Promise<string> {
+//   const { task_id } = args;
 
-  if (!task_id) {
-    throw new McpError(
-      ErrorCode.InvalidParams,
-      "task_id is required"
-    );
-  }
+//   if (!task_id) {
+//     throw new McpError(
+//       ErrorCode.InvalidParams,
+//       "task_id is required"
+//     );
+//   }
 
-  console.log(JSON.stringify({
-    action: "querying_sora2_task",
-    task_id
-  }));
+//   console.log(JSON.stringify({
+//     action: "querying_sora2_task",
+//     task_id
+//   }));
 
-  try {
-    const response = await axios.get<Sora2TaskResponse>(
-      `${SORA2_API_ENDPOINT}/v2/videos/generations/${task_id}`,
-      {
-        headers: {
-          "Authorization": `Bearer ${SORA2_API_KEY}`,
-        },
-        timeout: 30000, // 30 seconds timeout
-      }
-    );
+//   try {
+//     const response = await axios.get<Sora2TaskResponse>(
+//       `${SORA2_API_ENDPOINT}/v2/videos/generations/${task_id}`,
+//       {
+//         headers: {
+//           "Authorization": `Bearer ${SORA2_API_KEY}`,
+//         },
+//         timeout: 30000, // 30 seconds timeout
+//       }
+//     );
 
-    const taskData = response.data;
+//     const taskData = response.data;
 
-    console.log(JSON.stringify({
-      action: "task_status_retrieved",
-      task_id,
-      status: taskData.status
-    }));
+//     console.log(JSON.stringify({
+//       action: "task_status_retrieved",
+//       task_id,
+//       status: taskData.status
+//     }));
 
-    let result = `🔍 Sora2 Video Task Status\n`;
-    result += `${'='.repeat(60)}\n\n`;
-    result += `🎬 Task ID: ${task_id}\n`;
-    result += `📊 Status: ${taskData.status || 'unknown'}\n`;
+//     let result = `🔍 Sora2 Video Task Status\n`;
+//     result += `${'='.repeat(60)}\n\n`;
+//     result += `🎬 Task ID: ${task_id}\n`;
+//     result += `📊 Status: ${taskData.status || 'unknown'}\n`;
 
-    if (taskData.progress !== undefined) {
-      result += `⏳ Progress: ${taskData.progress}%\n`;
-    }
+//     if (taskData.progress !== undefined) {
+//       result += `⏳ Progress: ${taskData.progress}%\n`;
+//     }
 
-    if (taskData.status === 'completed' || taskData.status === 'success') {
-      result += `\n✅ Video generation completed!\n`;
-      if (taskData.video_url) {
-        result += `🎥 Video URL: ${taskData.video_url}\n`;
-      }
-    } else if (taskData.status === 'failed' || taskData.error) {
-      result += `\n❌ Video generation failed\n`;
-      if (taskData.error) {
-        result += `Error: ${taskData.error}\n`;
-      }
-    } else if (taskData.status === 'processing' || taskData.status === 'pending') {
-      result += `\n⏳ Video is still being generated. Please check again later.\n`;
-    }
+//     if (taskData.status === 'completed' || taskData.status === 'success') {
+//       result += `\n✅ Video generation completed!\n`;
+//       if (taskData.video_url) {
+//         result += `🎥 Video URL: ${taskData.video_url}\n`;
+//       }
+//     } else if (taskData.status === 'failed' || taskData.error) {
+//       result += `\n❌ Video generation failed\n`;
+//       if (taskData.error) {
+//         result += `Error: ${taskData.error}\n`;
+//       }
+//     } else if (taskData.status === 'processing' || taskData.status === 'pending' || taskData.status === 'IN_PROGRESS') {
+//       result += `\n⏳ Video is still being generated. Please check again later.\n`;
+//     }
 
-    result += `\n${'='.repeat(60)}\n`;
+//     result += `\n${'='.repeat(60)}\n`;
 
-    return result;
-  } catch (error) {
-    console.log(JSON.stringify({
-      action: "task_query_failed",
-      task_id,
-      error: error instanceof Error ? error.message : String(error)
-    }));
+//     return result;
+//   } catch (error) {
+//     console.log(JSON.stringify({
+//       action: "task_query_failed",
+//       task_id,
+//       error: error instanceof Error ? error.message : String(error)
+//     }));
 
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        const errorMsg = error.response.data?.error || error.response.data?.message || error.message;
-        throw new McpError(
-          ErrorCode.InternalError,
-          `Failed to query task: ${errorMsg}`
-        );
-      } else if (error.request) {
-        throw new McpError(
-          ErrorCode.InternalError,
-          "No response from Sora2 API. Please check your network connection."
-        );
-      }
-    }
+//     if (axios.isAxiosError(error)) {
+//       if (error.response) {
+//         const errorMsg = error.response.data?.error || error.response.data?.message || error.message;
+//         throw new McpError(
+//           ErrorCode.InternalError,
+//           `Failed to query task: ${errorMsg}`
+//         );
+//       } else if (error.request) {
+//         throw new McpError(
+//           ErrorCode.InternalError,
+//           "No response from Sora2 API. Please check your network connection."
+//         );
+//       }
+//     }
 
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Failed to query task status: ${error instanceof Error ? error.message : String(error)}`
-    );
-  }
-}
+//     throw new McpError(
+//       ErrorCode.InternalError,
+//       `Failed to query task status: ${error instanceof Error ? error.message : String(error)}`
+//     );
+//   }
+// }
 
 // Create MCP server
 const server = new Server(
@@ -1156,60 +1156,60 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["tasks"],
         },
       },
-      {
-        name: "generate_sora2_video",
-        description:
-          "Generate videos using Sora2 API. Supports both text-to-video (txt2vid) and image-to-video (img2vid) generation. " +
-          "The tool will automatically wait for video generation to complete and download the result to the specified directory. " +
-          "For text-to-video: just provide a prompt. For image-to-video: provide source images via 'images' parameter (must be URLs). " +
-          "Video generation typically takes 1-15 minutes depending on duration and quality settings. " +
-          "Perfect for creating animated content from text descriptions or converting images to videos.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            prompt: {
-              type: "string",
-              description: "Text description of the video to generate (supports English and Chinese)",
-            },
-            images: {
-              type: "array",
-              description: "Optional: Source image(s) for image-to-video generation. Supports: URL (http/https) or local file path (MUST be absolute path). Local images will be automatically converted to base64. If not provided, will generate video from text prompt only.",
-              items: {
-                type: "string",
-              },
-            },
-            aspect_ratio: {
-              type: "string",
-              description: "Video aspect ratio: '16:9', '9:16', '1:1' (default: '16:9')",
-              default: "16:9",
-            },
-            duration: {
-              type: "string",
-              description: "Video duration in seconds: '10' or '15' (default: '10')",
-              default: "10",
-            },
-            watermark: {
-              type: "boolean",
-              description: "Include watermark in video (default: false)",
-              default: false,
-            },
-            private: {
-              type: "boolean",
-              description: "Keep video private (default: true)",
-              default: true,
-            },
-            output_directory: {
-              type: "string",
-              description: "Directory to save generated video (MUST be absolute path). If not specified, video will not be downloaded. If set to empty string, video will be saved to a default temporary directory",
-            },
-            filename: {
-              type: "string",
-              description: "Custom filename for saved video (default: sora2_{timestamp}.mp4). Extension .mp4 will be added automatically if not provided.",
-            },
-          },
-          required: ["prompt"],
-        },
-      }
+      // {
+      //   name: "generate_sora2_video",
+      //   description:
+      //     "Generate videos using Sora2 API. Supports both text-to-video (txt2vid) and image-to-video (img2vid) generation. " +
+      //     "The tool will automatically wait for video generation to complete and download the result to the specified directory. " +
+      //     "For text-to-video: just provide a prompt. For image-to-video: provide source images via 'images' parameter (must be URLs). " +
+      //     "Video generation typically takes 1-15 minutes depending on duration and quality settings. " +
+      //     "Perfect for creating animated content from text descriptions or converting images to videos.",
+      //   inputSchema: {
+      //     type: "object",
+      //     properties: {
+      //       prompt: {
+      //         type: "string",
+      //         description: "Text description of the video to generate (supports English and Chinese)",
+      //       },
+      //       images: {
+      //         type: "array",
+      //         description: "Optional: Source image(s) for image-to-video generation. Supports: URL (http/https) or local file path (MUST be absolute path). Local images will be automatically converted to base64. If not provided, will generate video from text prompt only.",
+      //         items: {
+      //           type: "string",
+      //         },
+      //       },
+      //       aspect_ratio: {
+      //         type: "string",
+      //         description: "Video aspect ratio: '16:9', '9:16', '1:1' (default: '16:9')",
+      //         default: "16:9",
+      //       },
+      //       duration: {
+      //         type: "string",
+      //         description: "Video duration in seconds: '10' or '15' (default: '10')",
+      //         default: "10",
+      //       },
+      //       watermark: {
+      //         type: "boolean",
+      //         description: "Include watermark in video (default: false)",
+      //         default: false,
+      //       },
+      //       private: {
+      //         type: "boolean",
+      //         description: "Keep video private (default: true)",
+      //         default: true,
+      //       },
+      //       output_directory: {
+      //         type: "string",
+      //         description: "Directory to save generated video (MUST be absolute path). If not specified, video will not be downloaded. If set to empty string, video will be saved to a default temporary directory",
+      //       },
+      //       filename: {
+      //         type: "string",
+      //         description: "Custom filename for saved video (default: sora2_{timestamp}.mp4). Extension .mp4 will be added automatically if not provided.",
+      //       },
+      //     },
+      //     required: ["prompt"],
+      //   },
+      // }
     ],
   };
 });
@@ -1264,43 +1264,43 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     };
   }
 
-  if (request.params.name === "generate_sora2_video") {
-    const args = request.params.arguments as unknown as GenerateSora2VideoArgs;
+  // if (request.params.name === "generate_sora2_video") {
+  //   const args = request.params.arguments as unknown as GenerateSora2VideoArgs;
 
-    if (!args.prompt) {
-      throw new McpError(ErrorCode.InvalidParams, "prompt is required");
-    }
+  //   if (!args.prompt) {
+  //     throw new McpError(ErrorCode.InvalidParams, "prompt is required");
+  //   }
 
-    const result = await generateSora2Video(args);
+  //   const result = await generateSora2Video(args);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: result,
-        },
-      ],
-    };
-  }
+  //   return {
+  //     content: [
+  //       {
+  //         type: "text",
+  //         text: result,
+  //       },
+  //     ],
+  //   };
+  // }
 
-  if (request.params.name === "query_sora2_task") {
-    const args = request.params.arguments as unknown as QuerySora2TaskArgs;
+  // if (request.params.name === "query_sora2_task") {
+  //   const args = request.params.arguments as unknown as QuerySora2TaskArgs;
 
-    if (!args.task_id) {
-      throw new McpError(ErrorCode.InvalidParams, "task_id is required");
-    }
+  //   if (!args.task_id) {
+  //     throw new McpError(ErrorCode.InvalidParams, "task_id is required");
+  //   }
 
-    const result = await querySora2Task(args);
+  //   const result = await querySora2Task(args);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: result,
-        },
-      ],
-    };
-  }
+  //   return {
+  //     content: [
+  //       {
+  //         type: "text",
+  //         text: result,
+  //       },
+  //     ],
+  //   };
+  // }
 
   throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${request.params.name}`);
 });
